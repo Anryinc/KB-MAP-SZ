@@ -17,6 +17,7 @@
             font-size: 14px;
             font-weight: bold;
             color: #2C3959;
+            text-align: center;
         }
     </style>
 </head>
@@ -50,10 +51,10 @@
                         ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
                     `, { className: 'custom-popup' });
 
-                    L.marker(coordinates, {
+                    L.marker([coordinates[0] - 0.02, coordinates[1]], {
                         icon: L.divIcon({
                             className: 'city-label',
-                            html: city.name,
+                            html: `<div>${city.name}</div>`,
                             iconSize: null
                         })
                     }).addTo(map);
