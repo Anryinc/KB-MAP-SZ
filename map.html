@@ -19,7 +19,6 @@
             color: #2C3959;
             text-align: center;
             white-space: nowrap;
-            transform: translateX(-50%);
         }
     </style>
 </head>
@@ -52,12 +51,13 @@
                         <b>${city.name}</b><br>
                         ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
                     `, { className: 'custom-popup' });
-
-                    L.marker([coordinates[0] - 0.02, coordinates[1]], {
+                    
+                    L.marker([coordinates[0] - 0.05, coordinates[1]], { // Поднимаем текст выше пина
                         icon: L.divIcon({
                             className: 'city-label',
-                            html: `<div style="position: absolute; left: 50%; top: -20px;">${city.name}</div>`,
-                            iconSize: [0, 0]
+                            html: `<div style="transform: translate(-50%, -100%); position: relative;">${city.name}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0]
                         })
                     }).addTo(map);
                 }
