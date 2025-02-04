@@ -16,6 +16,8 @@
             padding: 4px 8px;
             border-radius: 5px;
             border: 2px solid #FF6240; /* Обводка цветом пина */
+            position: absolute;
+            transform: translate(-50%, -100%); /* Центрируем текст и поднимаем выше пина */
         }
     </style>
 </head>
@@ -34,11 +36,12 @@
                     const coordinates = citiesCoords[city.name];
                     if (coordinates) {
                         // Добавляем название города над пином, центрируя его
-                        L.marker([coordinates[0] + 0.05, coordinates[1]], {
+                        L.marker([coordinates[0] + 0.02, coordinates[1]], {
                             icon: L.divIcon({
                                 className: 'city-label',
-                                html: `${city.name}`,
-                                iconSize: null
+                                html: `<div>${city.name}</div>`,
+                                iconSize: [100, 20],
+                                iconAnchor: [50, 0] // Центрируем название над пином
                             })
                         }).addTo(map);
 
