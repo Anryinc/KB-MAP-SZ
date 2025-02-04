@@ -5,7 +5,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
-        #map { height: 900px; width: 100%; }
+        #map { height: 900px; }
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: #2C3959;
+            color: white;
+        }
+        .custom-popup .leaflet-popup-tip {
+            background: #2C3959;
+        }
         .city-label {
             font-size: 14px;
             font-weight: bold;
@@ -13,53 +20,50 @@
             text-align: center;
             white-space: nowrap;
             position: absolute;
-            transform: translate(-50%, -30px);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 2px 5px;
-            border-radius: 3px;
+            left: 50%;
+            transform: translate(-50%, -30px); /* Центрируем и поднимаем выше пина */
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            Promise.all([
-                fetch('employees.json').then(res => res.json()),
-                fetch('cities_coordinates.json').then(res => res.json())
-            ]).then(([cities, citiesCoords]) => {
-                const map = L.map('map').setView([55.7558, 37.6176], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        Promise.all([
+            fetch('employees.json').then(res => res.json()),
+            fetch('cities_coordinates.json').then(res => res.json())
+        ]).then(([cities, citiesCoords]) => {
+            const map = L.map('map').setView([55.7558, 37.6176], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-                cities.forEach(city => {
-                    const coordinates = citiesCoords[city.name];
-                    if (coordinates) {
-                        const marker = L.marker(coordinates, {
-                            icon: L.divIcon({
-                                className: '',
-                                html: `<div class="city-label">${city.name}</div>`,
-                                iconSize: [100, 20],
-                                iconAnchor: [50, 40] // Центрируем текст над пином
-                            })
-                        }).addTo(map);
+            const customIcon = L.icon({
+                iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+                        <circle cx="16" cy="16" r="10" fill="#FF6240" stroke="black" stroke-width="2"/>
+                    </svg>
+                `),
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
 
-                        L.marker(coordinates, {
-                            icon: L.circleMarker(coordinates, {
-                                radius: 8,
-                                fillColor: "#FF6240",
-                                color: "black",
-                                weight: 2,
-                                fillOpacity: 1
-                            })
-                        }).addTo(map)
-                        .bindPopup(`
-                            <div style="background: #2C3959; color: white; padding: 5px;"> 
-                                <b>${city.name}</b><br>
-                                ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
-                            </div>
-                        `);
-                    }
-                });
+            cities.forEach(city => {
+                const coordinates = citiesCoords[city.name];
+                if (coordinates) {
+                    const marker = L.marker(coordinates, { icon: customIcon }).addTo(map);
+                    marker.bindPopup(`
+                        <b>${city.name}</b><br>
+                        ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
+                    `, { className: 'custom-popup' });
+                    
+                    L.marker([coordinates[0] + 0.05, coordinates[1]], { // Поднимаем текст выше пина
+                        icon: L.divIcon({
+                            className: 'city-label',
+                            html: `<div>${city.name}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [16, 0]
+                        })
+                    }).addTo(map);
+                }
             });
         });
     </script>
