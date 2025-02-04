@@ -16,8 +16,6 @@
             padding: 4px 8px;
             border-radius: 5px;
             border: 2px solid #FF6240; /* Обводка цветом пина */
-            position: absolute;
-            transform: translate(-50%, -100%); /* Центрируем текст и поднимаем выше пина */
         }
     </style>
 </head>
@@ -35,25 +33,19 @@
                 cities.forEach(city => {
                     const coordinates = citiesCoords[city.name];
                     if (coordinates) {
-                        // Добавляем название города над пином, центрируя его
-                        L.marker([coordinates[0] + 0.02, coordinates[1]], {
+                        // Группируем название города и пин в один объект
+                        const cityGroup = L.marker(coordinates, {
                             icon: L.divIcon({
                                 className: 'city-label',
-                                html: `<div>${city.name}</div>`,
-                                iconSize: [100, 20],
-                                iconAnchor: [50, 0] // Центрируем название над пином
+                                html: `<div>${city.name}<br>
+                                    <div style="width: 12px; height: 12px; background: #FF6240; border: 2px solid black; border-radius: 50%; margin: 4px auto;"></div>
+                                    </div>`,
+                                iconSize: [100, 40],
+                                iconAnchor: [50, 20] // Центрируем точку привязки на нижнюю границу
                             })
                         }).addTo(map);
 
-                        // Добавляем сам пин
-                        L.circleMarker(coordinates, {
-                            radius: 8,
-                            fillColor: "#FF6240",
-                            color: "black",
-                            weight: 2,
-                            fillOpacity: 1
-                        }).addTo(map)
-                        .bindPopup(`
+                        cityGroup.bindPopup(`
                             <div style="background: #2C3959; color: white; padding: 5px; border-radius: 5px;"> 
                                 <b>${city.name}</b><br>
                                 ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
