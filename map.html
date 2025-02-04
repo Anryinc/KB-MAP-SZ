@@ -13,6 +13,12 @@
         .custom-popup .leaflet-popup-tip {
             background: #2C3959;
         }
+        .city-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00924C;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+        }
     </style>
 </head>
 <body>
@@ -44,6 +50,14 @@
                         <b>${city.name}</b><br>
                         ${city.employees.map(e => `${e.name} (${e.department})`).join('<br>')}
                     `, { className: 'custom-popup' });
+
+                    L.marker(coordinates, {
+                        icon: L.divIcon({
+                            className: 'city-label',
+                            html: city.name,
+                            iconSize: null
+                        })
+                    }).addTo(map);
                 }
             });
         });
